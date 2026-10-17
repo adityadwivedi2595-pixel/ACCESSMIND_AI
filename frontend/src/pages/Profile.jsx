@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { fetchProfile, saveProfile } from '../api';
+import { fetchProfile, getSessionId, saveProfile } from '../api';
 import { Save, Loader2, CheckCircle2, User, Sparkles, ArrowRight, AlertCircle } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
@@ -23,9 +23,8 @@ const Profile = () => {
   const [errorMsg, setErrorMsg] = useState('');
 
   useEffect(() => {
-    const sessionId = localStorage.getItem('session_id') || 'default_user';
-    localStorage.setItem('session_id', sessionId);
-    
+    const sessionId = getSessionId();
+
     fetchProfile(sessionId)
       .then(data => {
         if (data) {
@@ -66,7 +65,7 @@ const Profile = () => {
     setSaving(true);
     setErrorMsg('');
     try {
-      const sessionId = localStorage.getItem('session_id') || 'default_user';
+      const sessionId = getSessionId();
       const payload = {
         ...profile,
         session_id: sessionId,
@@ -326,7 +325,7 @@ const Profile = () => {
           {/* Action Row */}
           <div className="pt-6 border-t border-slate-100 flex flex-col sm:flex-row items-center justify-between gap-4">
             <div className="text-xs text-slate-500">
-              Session ID: <code className="bg-slate-100 px-2 py-1 rounded text-slate-700">{localStorage.getItem('session_id') || 'default_user'}</code>
+              Your profile is private to this browser.
             </div>
 
             <button

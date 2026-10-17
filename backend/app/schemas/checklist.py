@@ -1,7 +1,8 @@
 from pydantic import BaseModel
+from uuid import UUID
 
 class ChecklistTaskBase(BaseModel):
-    session_id: str
+    session_id: UUID
     scheme_id: int
     task_text: str
     is_completed: bool = False

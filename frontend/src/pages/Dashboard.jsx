@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { fetchSchemes, fetchProfile } from '../api';
+import { fetchSchemes, fetchProfile, getSessionId } from '../api';
 import { 
   ArrowRight, 
   BookOpen, 
@@ -30,7 +30,7 @@ const Dashboard = () => {
       })
       .catch(console.error);
 
-    const sessionId = localStorage.getItem('session_id') || 'default_user';
+    const sessionId = getSessionId();
     fetchProfile(sessionId)
       .then(p => {
         if (p && (p.name || p.age || p.student_status)) {

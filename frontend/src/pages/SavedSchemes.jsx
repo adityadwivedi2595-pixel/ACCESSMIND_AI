@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Bookmark, ExternalLink, Loader2, Trash2 } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import { fetchSavedSchemes, fetchSchemes, removeSavedScheme } from '../api';
+import { fetchSavedSchemes, fetchSchemes, getSessionId, removeSavedScheme } from '../api';
 
 const SavedSchemes = () => {
   const [savedSchemes, setSavedSchemes] = useState([]);
@@ -12,7 +12,7 @@ const SavedSchemes = () => {
   useEffect(() => {
     const loadSavedSchemes = async () => {
       try {
-        const sessionId = localStorage.getItem('session_id') || 'default_user';
+        const sessionId = getSessionId();
         const [saved, schemes] = await Promise.all([
           fetchSavedSchemes(sessionId),
           fetchSchemes()

@@ -1,5 +1,6 @@
 from pydantic import BaseModel
 from typing import Optional
+from uuid import UUID
 
 class ProfileBase(BaseModel):
     name: Optional[str] = None
@@ -15,14 +16,14 @@ class ProfileBase(BaseModel):
     occupation: Optional[str] = None
 
 class ProfileCreate(ProfileBase):
-    session_id: str
+    session_id: UUID
 
 class ProfileUpdate(ProfileBase):
     pass
 
 class Profile(ProfileBase):
     id: Optional[int] = None
-    session_id: str
+    session_id: UUID
 
     class Config:
         from_attributes = True

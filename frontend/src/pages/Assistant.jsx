@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
-import { askAssistant } from '../api';
+import { askAssistant, getSessionId } from '../api';
 import { Send, Bot, User, Loader2, Sparkles, RotateCcw } from 'lucide-react';
 
 const SUGGESTED_QUESTIONS = [
@@ -39,7 +39,7 @@ const Assistant = () => {
     setLoading(true);
 
     try {
-      const sessionId = localStorage.getItem('session_id') || 'default_user';
+      const sessionId = getSessionId();
       const res = await askAssistant(userMsg, sessionId);
       setMessages(prev => [...prev, { 
         id: Date.now() + 1, 

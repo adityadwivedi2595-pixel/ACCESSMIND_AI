@@ -1,8 +1,8 @@
 from pydantic import BaseModel
-from app.schemas.scheme import Scheme
+from uuid import UUID
 
 class SavedSchemeBase(BaseModel):
-    session_id: str
+    session_id: UUID
     scheme_id: int
 
 class SavedSchemeCreate(SavedSchemeBase):

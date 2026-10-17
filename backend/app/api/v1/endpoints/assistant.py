@@ -1,6 +1,7 @@
 from fastapi import APIRouter, Depends
 from pydantic import BaseModel
 from typing import List, Optional
+from uuid import UUID
 from sqlalchemy.orm import Session
 from app.db.session import get_db
 from app.models.scheme import Scheme as SchemeModel
@@ -10,7 +11,7 @@ router = APIRouter()
 
 class ChatRequest(BaseModel):
     message: str
-    session_id: str
+    session_id: UUID
     context: Optional[dict] = None
 
 class ChatResponse(BaseModel):
@@ -20,7 +21,7 @@ class ChatResponse(BaseModel):
 @router.post("/", response_model=ChatResponse)
 def ask_assistant(request: ChatRequest, db: Session = Depends(get_db)):
     msg = request.message.strip().lower()
-    session_id = request.session_id or "default_user"
+    session_id = str(request.session_id)
     user_profile = db.query(ProfileModel).filter(ProfileModel.session_id == session_id).first()
     schemes = db.query(SchemeModel).all()
     sources = ["AccessMind Knowledge Base"]

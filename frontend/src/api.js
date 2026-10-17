@@ -1,4 +1,14 @@
-const API_BASE_URL = 'http://localhost:8000/api/v1';
+const API_BASE_URL = (import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000/api/v1').replace(/\/$/, '');
+
+export const getSessionId = () => {
+  const storedSessionId = localStorage.getItem('session_id');
+  const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(storedSessionId || '');
+  if (isUuid) return storedSessionId;
+
+  const sessionId = crypto.randomUUID();
+  localStorage.setItem('session_id', sessionId);
+  return sessionId;
+};
 
 export const fetchSchemes = async (q = '', category = '') => {
   const params = new URLSearchParams();
@@ -17,8 +27,8 @@ export const fetchScheme = async (id) => {
   return res.json();
 };
 
-export const evaluateScheme = async (id, sessionId = 'default_user') => {
-  const res = await fetch(`${API_BASE_URL}/schemes/${id}/evaluate?session_id=${sessionId}`);
+export const evaluateScheme = async (id, sessionId = getSessionId()) => {
+  const res = await fetch(`${API_BASE_URL}/schemes/${id}/evaluate?session_id=${encodeURIComponent(sessionId)}`);
   if (!res.ok) {
     const errorData = await res.json().catch(() => ({}));
     throw new Error(errorData.detail || 'Failed to evaluate scheme');
@@ -26,7 +36,7 @@ export const evaluateScheme = async (id, sessionId = 'default_user') => {
   return res.json();
 };
 
-export const askAssistant = async (message, sessionId = 'default_user') => {
+export const askAssistant = async (message, sessionId = getSessionId()) => {
   const res = await fetch(`${API_BASE_URL}/assistant/`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
@@ -49,19 +59,19 @@ export const saveProfile = async (profile) => {
   return res.json();
 };
 
-export const fetchProfile = async (sessionId = 'default_user') => {
-  const res = await fetch(`${API_BASE_URL}/profiles/${sessionId}`);
+export const fetchProfile = async (sessionId = getSessionId()) => {
+  const res = await fetch(`${API_BASE_URL}/profiles/${encodeURIComponent(sessionId)}`);
   if (!res.ok) return null;
   return res.json();
 };
 
-export const fetchSavedSchemes = async (sessionId = 'default_user') => {
-  const res = await fetch(`${API_BASE_URL}/checklist/saved/${sessionId}`);
+export const fetchSavedSchemes = async (sessionId = getSessionId()) => {
+  const res = await fetch(`${API_BASE_URL}/checklist/saved/${encodeURIComponent(sessionId)}`);
   if (!res.ok) return [];
   return res.json();
 };
 
-export const saveSchemeBookmark = async (schemeId, sessionId = 'default_user') => {
+export const saveSchemeBookmark = async (schemeId, sessionId = getSessionId()) => {
   const res = await fetch(`${API_BASE_URL}/checklist/saved`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
@@ -71,8 +81,9 @@ export const saveSchemeBookmark = async (schemeId, sessionId = 'default_user') =
   return res.json();
 };
 
-export const removeSavedScheme = async (savedId) => {
-  const res = await fetch(`${API_BASE_URL}/checklist/saved/${savedId}`, {
+export const removeSavedScheme = async (savedId, sessionId = getSessionId()) => {
+  const params = new URLSearchParams({ session_id: sessionId });
+  const res = await fetch(`${API_BASE_URL}/checklist/saved/${savedId}?${params}`, {
     method: 'DELETE'
   });
   if (!res.ok) throw new Error('Failed to remove saved scheme');

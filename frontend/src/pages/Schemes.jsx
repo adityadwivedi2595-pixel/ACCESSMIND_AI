@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { fetchSchemes, evaluateScheme, saveSchemeBookmark, fetchSavedSchemes, removeSavedScheme } from '../api';
+import { fetchSchemes, evaluateScheme, saveSchemeBookmark, fetchSavedSchemes, getSessionId, removeSavedScheme } from '../api';
 import { 
   Search, 
   Loader2, 
@@ -50,7 +50,7 @@ const Schemes = () => {
 
   const loadSavedSchemes = async () => {
     try {
-      const sessionId = localStorage.getItem('session_id') || 'default_user';
+      const sessionId = getSessionId();
       const saved = await fetchSavedSchemes(sessionId);
       const idSet = new Set(saved.map(item => item.scheme_id));
       const recordMap = {};
@@ -67,7 +67,7 @@ const Schemes = () => {
   const handleEvaluate = async (id) => {
     setEvaluating(id);
     try {
-      const sessionId = localStorage.getItem('session_id') || 'default_user';
+      const sessionId = getSessionId();
       const res = await evaluateScheme(id, sessionId);
       setResults(prev => ({ ...prev, [id]: res }));
     } catch (e) {
@@ -85,12 +85,12 @@ const Schemes = () => {
   };
 
   const toggleBookmark = async (schemeId) => {
-    const sessionId = localStorage.getItem('session_id') || 'default_user';
+    const sessionId = getSessionId();
     try {
       if (savedSchemeIds.has(schemeId)) {
         const savedRecordId = savedRecords[schemeId];
         if (savedRecordId) {
-          await removeSavedScheme(savedRecordId);
+          await removeSavedScheme(savedRecordId, sessionId);
           setSavedSchemeIds(prev => {
             const next = new Set(prev);
             next.delete(schemeId);
