@@ -1,6 +1,7 @@
 # Python environments and generated files
 backend/venv/
 **/__pycache__/
+/.pytest_cache/
 *.py[cod]
 *.egg-info/
 
