@@ -8,8 +8,8 @@ backend/venv/
 .env
 .env.*
 !.env.example
-backend/*.db
-backend/*.db-*
+*.db
+*.db-*
 
 # Frontend dependencies and build output
 frontend/node_modules/
